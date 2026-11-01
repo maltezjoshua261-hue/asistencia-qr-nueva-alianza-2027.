@@ -53,34 +53,10 @@ button:disabled{opacity:.55;cursor:not-allowed}footer{text-align:center;color:va
 <div id="reader"></div>
 <div id="status" class="status" role="status">Selecciona ENTRADA o SALIDA y activa la cámara.</div>
 </section>
-<section class="card">
-<h2>3. Resumen diario</h2>
-<p class="hint">El resumen diario se habilitará al conectar la consulta protegida del Director.</p>
-<label for="fecha">Fecha del reporte</label><input id="fecha" type="date">
-<button class="secondary" type="button" disabled>CONSULTAR DÍA</button>
-</section>
-<section class="card">
-<h2>4. Resumen mensual</h2>
-<p class="hint">La consulta mensual estará disponible en el módulo protegido del Director.</p>
-<label for="mes">Mes del reporte</label><input id="mes" type="month">
-<button class="secondary" type="button" disabled>CONSULTAR MES</button>
-</section>
-<section class="card">
-<h2>5. Historial de asistencia</h2>
-<p class="hint">El historial se habilitará después de proteger el acceso administrativo.</p>
-<label for="filtro">Filtrar por fecha (opcional)</label><input id="filtro" type="date">
-<button class="secondary" type="button" disabled>VER HISTORIAL</button>
-</section>
-<section class="card">
-<h2>Panel de Google Sheets</h2>
-<p class="hint">El panel original permanece en Google Sheets. No se modifica desde esta pantalla.</p>
-<a href="https://docs.google.com/spreadsheets/d/1POwnZEoVtHgQq6CI3-frr2jaRkAwhqadb3ERo73ovg0/edit?gid=1243183709#gid=1243183709" target="_blank" rel="noopener"><button class="secondary" type="button">ABRIR PANEL DE GOOGLE SHEETS</button></a>
-</section>
 </div>
 <section id="adminView" hidden aria-label="Panel administrativo">
 <iframe id="adminFrame" title="Panel administrativo de Asistencia QR" loading="lazy" referrerpolicy="strict-origin-when-cross-origin"></iframe>
 </section>
-<footer>ASISTENCIA QR · NUEVA ALIANZA · 2027</footer>
 </main>
 <script>
 const API_URL = "https://script.google.com/macros/s/AKfycbys7STdWlIcX39-rL65Y6vBJ0vKwSkKIornixPB2G9VtZyKNrinp2K4dyz5X8MxB0Bu5A/exec";
