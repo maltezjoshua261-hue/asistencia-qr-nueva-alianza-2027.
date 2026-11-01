@@ -23,12 +23,18 @@ label{display:block;font-size:13px;font-weight:700;margin:12px 0 6px}input{width
 .status.ok{background:#e7f6ec;color:#176238}.status.err{background:#fff0ef;color:#9b2820}
 .grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.stat{background:#f4f7fb;border-radius:10px;padding:13px}.stat b{display:block;font-size:21px;color:var(--navy);margin-top:4px}
 button:disabled{opacity:.55;cursor:not-allowed}footer{text-align:center;color:var(--muted);font-size:12px;padding:10px}
+.views-nav{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}.view-tab{background:#dce7f1;color:var(--navy);border:2px solid transparent}.view-tab.active{background:var(--navy);color:#fff;border-color:var(--gold)}#adminView[hidden]{display:none}#adminFrame{display:block;width:100%;height:1100px;border:0;border-radius:12px;background:#fff}
 @media(max-width:480px){main{margin:12px auto}.card{padding:16px}.grid{grid-template-columns:1fr 1fr}h1{font-size:21px}}
 </style>
 </head>
 <body>
 <header><div class="mark">📱</div><h1>ASISTENCIA QR</h1><p>CENTRO ESCOLAR NUEVA ALIANZA · 2027</p></header>
 <main>
+<nav class="views-nav" aria-label="Secciones del sistema">
+<button id="tabScanner" class="view-tab active" type="button">📷 ASISTENCIA QR</button>
+<button id="tabAdmin" class="view-tab" type="button">🔐 ADMINISTRADOR</button>
+</nav>
+<div id="scannerView">
 <section class="card">
 <h2>1. Selecciona el tipo de asistencia</h2>
 <div class="modes">
@@ -70,10 +76,15 @@ button:disabled{opacity:.55;cursor:not-allowed}footer{text-align:center;color:va
 <p class="hint">El panel original permanece en Google Sheets. No se modifica desde esta pantalla.</p>
 <a href="https://docs.google.com/spreadsheets/d/1POwnZEoVtHgQq6CI3-frr2jaRkAwhqadb3ERo73ovg0/edit?gid=1243183709#gid=1243183709" target="_blank" rel="noopener"><button class="secondary" type="button">ABRIR PANEL DE GOOGLE SHEETS</button></a>
 </section>
+</div>
+<section id="adminView" hidden aria-label="Panel administrativo">
+<iframe id="adminFrame" title="Panel administrativo de Asistencia QR" loading="lazy" referrerpolicy="strict-origin-when-cross-origin"></iframe>
+</section>
 <footer>ASISTENCIA QR · NUEVA ALIANZA · 2027</footer>
 </main>
 <script>
 const API_URL = "https://script.google.com/macros/s/AKfycbys7STdWlIcX39-rL65Y6vBJ0vKwSkKIornixPB2G9VtZyKNrinp2K4dyz5X8MxB0Bu5A/exec";
+const ADMIN_URL = API_URL + "?page=admin";
 const TOKEN_KEY = "na_qr_connection_token";
 let tipo = "ENTRADA";
 let scanner = null;
@@ -208,6 +219,23 @@ $("fecha").value = new Date().toLocaleDateString("en-CA");
 $("filtro").value = new Date().toLocaleDateString("en-CA");
 $("mes").value = new Date().toISOString().slice(0,7);
 window.addEventListener("pagehide", () => { if (scanner) scanner.stop().catch(()=>{}); });
+
+// Navegación integrada: escáner y administrador en una sola interfaz.
+$("tabScanner").addEventListener("click", () => {
+  $("adminView").hidden = true;
+  $("scannerView").hidden = false;
+  $("tabScanner").classList.add("active");
+  $("tabAdmin").classList.remove("active");
+});
+$("tabAdmin").addEventListener("click", async () => {
+  if (scanner) await stopCamera();
+  $("scannerView").hidden = true;
+  $("adminView").hidden = false;
+  $("tabAdmin").classList.add("active");
+  $("tabScanner").classList.remove("active");
+  const frame = $("adminFrame");
+  if (!frame.src) frame.src = ADMIN_URL;
+});
 </script>
 </body>
 </html>
