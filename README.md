@@ -1,0 +1,1 @@
+# asistencia-qr-nueva-alianza-2027.
