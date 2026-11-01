@@ -191,9 +191,6 @@ async function startCamera() {
 }
 $("start").addEventListener("click", startCamera);
 $("stop").addEventListener("click", stopCamera);
-$("fecha").value = new Date().toLocaleDateString("en-CA");
-$("filtro").value = new Date().toLocaleDateString("en-CA");
-$("mes").value = new Date().toISOString().slice(0,7);
 window.addEventListener("pagehide", () => { if (scanner) scanner.stop().catch(()=>{}); });
 
 // Navegación integrada: escáner y administrador en una sola interfaz.
