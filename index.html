@@ -1,0 +1,213 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#123b63">
+<title>ASISTENCIA QR · NUEVA ALIANZA · 2027</title>
+<script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+<style>
+:root{--navy:#123b63;--blue:#1769aa;--gold:#e5b52f;--bg:#f2f5f9;--ink:#182536;--muted:#64748b;--line:#dbe3ed}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);font-family:Arial,Helvetica,sans-serif;color:var(--ink)}
+header{background:linear-gradient(135deg,#123b63,#1769aa);color:#fff;text-align:center;padding:25px 16px 22px}
+header .mark{font-size:30px}h1{font-size:24px;letter-spacing:.7px;margin:8px 0 5px}header p{margin:0;font-size:13px;letter-spacing:1.2px}
+main{max-width:760px;margin:22px auto;padding:0 14px 30px}.card{background:#fff;border:1px solid var(--line);border-radius:15px;padding:19px;margin:14px 0;box-shadow:0 3px 12px #16324b0a}
+h2{font-size:17px;margin:0 0 15px;color:var(--navy)}.modes{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+button{border:0;border-radius:10px;padding:13px 14px;font-size:15px;font-weight:700;cursor:pointer}
+.mode{color:#fff;background:#64748b}.mode.active.in{background:#1769aa}.mode.active.out{background:#d69c08}
+.primary{background:var(--navy);color:white;width:100%;margin-top:12px}.secondary{background:#eaf1f8;color:var(--navy);width:100%;margin-top:8px}
+small,.hint{color:var(--muted)}.selected{margin:12px 0 0;font-size:14px}.selected strong{color:var(--blue)}
+label{display:block;font-size:13px;font-weight:700;margin:12px 0 6px}input{width:100%;padding:12px;border:1px solid #cbd5e1;border-radius:9px;font-size:15px}
+#reader{width:100%;max-width:480px;margin:14px auto 0;overflow:hidden;border-radius:10px}
+#reader video{border-radius:10px}.status{white-space:pre-line;background:#f1f5f9;border-radius:9px;padding:12px;margin-top:12px;font-size:14px;min-height:42px}
+.status.ok{background:#e7f6ec;color:#176238}.status.err{background:#fff0ef;color:#9b2820}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.stat{background:#f4f7fb;border-radius:10px;padding:13px}.stat b{display:block;font-size:21px;color:var(--navy);margin-top:4px}
+button:disabled{opacity:.55;cursor:not-allowed}footer{text-align:center;color:var(--muted);font-size:12px;padding:10px}
+@media(max-width:480px){main{margin:12px auto}.card{padding:16px}.grid{grid-template-columns:1fr 1fr}h1{font-size:21px}}
+</style>
+</head>
+<body>
+<header><div class="mark">📱</div><h1>ASISTENCIA QR</h1><p>CENTRO ESCOLAR NUEVA ALIANZA · 2027</p></header>
+<main>
+<section class="card">
+<h2>1. Selecciona el tipo de asistencia</h2>
+<div class="modes">
+<button id="entrada" class="mode active in" type="button">🟦 ENTRADA</button>
+<button id="salida" class="mode" type="button">🟨 SALIDA</button>
+</div>
+<p class="selected">Tipo seleccionado: <strong id="tipoLabel">ENTRADA</strong></p>
+</section>
+<section class="card">
+<h2>2. Escanea el carnet del estudiante</h2>
+<label for="token">Clave de conexión</label>
+<input id="token" type="password" autocomplete="current-password" placeholder="Introduce la clave entregada por Dirección">
+<p class="hint">La clave se mantiene en este dispositivo y no está publicada en el código del sitio.</p>
+<button id="start" class="primary" type="button">📷 ACTIVAR CÁMARA</button>
+<button id="stop" class="secondary" type="button" hidden>DETENER CÁMARA</button>
+<div id="reader"></div>
+<div id="status" class="status" role="status">Selecciona ENTRADA o SALIDA y activa la cámara.</div>
+</section>
+<section class="card">
+<h2>3. Resumen diario</h2>
+<p class="hint">El resumen diario se habilitará al conectar la consulta protegida del Director.</p>
+<label for="fecha">Fecha del reporte</label><input id="fecha" type="date">
+<button class="secondary" type="button" disabled>CONSULTAR DÍA</button>
+</section>
+<section class="card">
+<h2>4. Resumen mensual</h2>
+<p class="hint">La consulta mensual estará disponible en el módulo protegido del Director.</p>
+<label for="mes">Mes del reporte</label><input id="mes" type="month">
+<button class="secondary" type="button" disabled>CONSULTAR MES</button>
+</section>
+<section class="card">
+<h2>5. Historial de asistencia</h2>
+<p class="hint">El historial se habilitará después de proteger el acceso administrativo.</p>
+<label for="filtro">Filtrar por fecha (opcional)</label><input id="filtro" type="date">
+<button class="secondary" type="button" disabled>VER HISTORIAL</button>
+</section>
+<section class="card">
+<h2>Panel de Google Sheets</h2>
+<p class="hint">El panel original permanece en Google Sheets. No se modifica desde esta pantalla.</p>
+<a href="https://docs.google.com/spreadsheets/d/1POwnZEoVtHgQq6CI3-frr2jaRkAwhqadb3ERo73ovg0/edit?gid=1243183709#gid=1243183709" target="_blank" rel="noopener"><button class="secondary" type="button">ABRIR PANEL DE GOOGLE SHEETS</button></a>
+</section>
+<footer>ASISTENCIA QR · NUEVA ALIANZA · 2027</footer>
+</main>
+<script>
+const API_URL = "https://script.google.com/macros/s/AKfycbys7STdWlIcX39-rL65Y6vBJ0vKwSkKIornixPB2G9VtZyKNrinp2K4dyz5X8MxB0Bu5A/exec";
+const TOKEN_KEY = "na_qr_connection_token";
+let tipo = "ENTRADA";
+let scanner = null;
+let busy = false;
+
+const $ = id => document.getElementById(id);
+const show = (message, kind="") => { $("status").textContent = message; $("status").className = "status " + kind; };
+
+function setTipo(next) {
+  tipo = next;
+  $("tipoLabel").textContent = next;
+  $("entrada").className = "mode" + (next === "ENTRADA" ? " active in" : "");
+  $("salida").className = "mode" + (next === "SALIDA" ? " active out" : "");
+}
+$("entrada").addEventListener("click", () => setTipo("ENTRADA"));
+$("salida").addEventListener("click", () => setTipo("SALIDA"));
+
+const savedToken = localStorage.getItem(TOKEN_KEY);
+if (savedToken) $("token").value = savedToken;
+
+function jsonp(params) {
+  return new Promise((resolve, reject) => {
+    const callback = "naQrCb_" + Date.now() + "_" + Math.floor(Math.random()*100000);
+    const script = document.createElement("script");
+    const query = new URLSearchParams({...params, callback});
+    let finished = false;
+    const clean = () => {
+      if (script.parentNode) script.parentNode.removeChild(script);
+      try { delete window[callback]; } catch (_) { window[callback] = undefined; }
+    };
+    const timer = setTimeout(() => {
+      if (finished) return;
+      finished = true; clean(); reject(new Error("El servidor no respondió. Comprueba la conexión."));
+    }, 15000);
+    window[callback] = data => {
+      if (finished) return;
+      finished = true; clearTimeout(timer); clean(); resolve(data);
+    };
+    script.onerror = () => {
+      if (finished) return;
+      finished = true; clearTimeout(timer); clean(); reject(new Error("No se pudo conectar con Google Apps Script."));
+    };
+    script.src = API_URL + "?" + query.toString();
+    document.body.appendChild(script);
+  });
+}
+
+async function stopCamera() {
+  if (scanner) {
+    try { await scanner.stop(); } catch (_) {}
+    try { await scanner.clear(); } catch (_) {}
+    scanner = null;
+  }
+  $("reader").innerHTML = "";
+  $("start").hidden = false;
+  $("stop").hidden = true;
+}
+
+async function registerCode(rawCode) {
+  if (busy) return;
+  busy = true;
+  await stopCamera();
+  const token = $("token").value.trim();
+  if (!token) {
+    show("Introduce la clave de conexión entregada por Dirección.", "err");
+    busy = false;
+    return;
+  }
+  localStorage.setItem(TOKEN_KEY, token);
+  show("Código leído. Registrando " + tipo + "…");
+  try {
+    const result = await jsonp({
+      page: "registrar_jsonp",
+      id: rawCode.trim(),
+      token,
+      tipo
+    });
+    if (result && (result.correcto === true || result.success === true)) {
+      show(result.mensaje || (tipo + " registrada correctamente."), "ok");
+    } else {
+      show((result && result.mensaje) || "El servidor no confirmó el registro.", "err");
+    }
+  } catch (err) {
+    show(err.message || "No se pudo registrar la asistencia.", "err");
+  } finally {
+    busy = false;
+  }
+}
+
+async function startCamera() {
+  if (scanner || busy) return;
+  if (!window.isSecureContext) {
+    show("La cámara requiere una página HTTPS segura.", "err");
+    return;
+  }
+  if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+    show("Este navegador no ofrece acceso a la cámara en esta página.", "err");
+    return;
+  }
+  if (!$("token").value.trim()) {
+    show("Introduce primero la clave de conexión entregada por Dirección.", "err");
+    $("token").focus();
+    return;
+  }
+  $("start").hidden = true;
+  $("stop").hidden = false;
+  show("Solicitando acceso a la cámara…");
+  try {
+    scanner = new Html5Qrcode("reader", { verbose: false });
+    const cameras = await Html5Qrcode.getCameras();
+    if (!cameras || !cameras.length) throw new Error("No se detectó ninguna cámara disponible.");
+    const backCamera = cameras.find(c => /back|rear|environment|trasera|posterior/i.test(c.label));
+    await scanner.start(
+      backCamera ? backCamera.id : cameras[0].id,
+      { fps: 10, qrbox: { width: 250, height: 250 }, aspectRatio: 1 },
+      decodedText => registerCode(decodedText),
+      () => {}
+    );
+    show("Cámara activa. Coloca el carnet dentro del recuadro.");
+  } catch (err) {
+    await stopCamera();
+    let message = err && err.message ? err.message : String(err);
+    if (/permission|denied|notallowed/i.test(message)) {
+      message = "El navegador denegó el acceso a la cámara. Revisa que la página esté abierta directamente en HTTPS.";
+    }
+    show("No se pudo abrir la cámara. " + message, "err");
+  }
+}
+$("start").addEventListener("click", startCamera);
+$("stop").addEventListener("click", stopCamera);
+$("fecha").value = new Date().toLocaleDateString("en-CA");
+$("filtro").value = new Date().toLocaleDateString("en-CA");
+$("mes").value = new Date().toISOString().slice(0,7);
+window.addEventListener("pagehide", () => { if (scanner) scanner.stop().catch(()=>{}); });
+</script>
+</body>
+</html>
