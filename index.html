@@ -207,7 +207,7 @@ $("tabAdmin").addEventListener("click", async () => {
   $("tabAdmin").classList.add("active");
   $("tabScanner").classList.remove("active");
   const frame = $("adminFrame");
-  if (!frame.src) frame.src = ADMIN_URL;
+  if (!frame.getAttribute("src")) frame.src = ADMIN_URL;
 });
 </script>
 </body>
