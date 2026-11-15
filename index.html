@@ -4,6 +4,14 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#123b63">
+<meta name="description" content="Aplicación móvil de asistencia QR del Centro Escolar Nueva Alianza, 2027.">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Asistencia QR">
+<link rel="manifest" href="./manifest.webmanifest">
+<link rel="icon" type="image/svg+xml" href="./icon-192.svg">
+<link rel="apple-touch-icon" href="./icon-192.svg">
 <title>ASISTENCIA QR · NUEVA ALIANZA · 2027</title>
 <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
 <style>
@@ -56,6 +64,7 @@ button:disabled{opacity:.55;cursor:not-allowed}footer{text-align:center;color:va
 <body>
 <header><div class="mark">📱</div><h1>ASISTENCIA QR</h1><p>CENTRO ESCOLAR NUEVA ALIANZA · 2027</p></header>
 <main>
+<button id="installApp" class="secondary" type="button" hidden style="margin:0 0 12px">⬇️ INSTALAR APLICACIÓN</button>
 <nav class="views-nav" aria-label="Secciones del sistema">
 <button id="tabScanner" class="view-tab active" type="button">📷 ASISTENCIA QR</button>
 <button id="tabAdmin" class="view-tab" type="button">🔐 ADMINISTRADOR</button>
@@ -218,6 +227,36 @@ async function startCamera() {
 $("start").addEventListener("click", startCamera);
 $("stop").addEventListener("click", stopCamera);
 window.addEventListener("pagehide", () => { if (scanner) scanner.stop().catch(()=>{}); });
+
+// Instalación como aplicación móvil (Android/Chrome y navegadores compatibles).
+let deferredInstallPrompt = null;
+const installButton = $("installApp");
+window.addEventListener("beforeinstallprompt", event => {
+  event.preventDefault();
+  deferredInstallPrompt = event;
+  installButton.hidden = false;
+});
+installButton.addEventListener("click", async () => {
+  if (!deferredInstallPrompt) {
+    show("Para instalar en iPhone: abre Compartir en Safari y selecciona “Agregar a pantalla de inicio”.");
+    return;
+  }
+  deferredInstallPrompt.prompt();
+  await deferredInstallPrompt.userChoice;
+  deferredInstallPrompt = null;
+  installButton.hidden = true;
+});
+window.addEventListener("appinstalled", () => {
+  installButton.hidden = true;
+  show("Aplicación instalada correctamente en este teléfono.", "ok");
+});
+
+// La aplicación guarda su interfaz básica; registrar asistencia requiere conexión.
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("./service-worker.js").catch(error => console.warn("No se pudo activar el modo aplicación:", error));
+  });
+}
 
 // Navegación integrada: escáner y administrador en una sola interfaz.
 $("tabScanner").addEventListener("click", () => {
